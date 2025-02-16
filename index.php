@@ -1,4 +1,8 @@
-<?php include "db.php" ?>
+<?php 
+include "db.php";
+include 'update.php';
+include 'delete.php';
+?>
 
 
 <!DOCTYPE html>
@@ -9,7 +13,7 @@
     <title>Medical History</title>
 </head>
 <body>
-    <form action="<?php htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         <label for="">Patient Name</label>
         <input type="text" name="patient_name" required>
 
@@ -30,6 +34,37 @@
 
         <input type="submit">
     </form>
+
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <label for="">Patient ID</label>
+        <input type="number" name="update_patient" required>
+
+        <label for="">Update Name</label>
+        <input type="text" name="update_name" >
+
+       <label for="">Update Subjective</label>
+       <input type="text" name="update_sub">
+
+       <label for="">Update Objective</label>
+       <input type="text" name="update_obj">
+
+       <label for="">Update Assessment</label>
+       <input type="text" name="update_ass">
+
+       <label for="">Update Plan</label>
+       <input type="text" name="update_plan">
+
+       <label for="">Update Date</label>
+       <input type="date" name="update_date">
+
+       <input type="submit" name="submit" value="UPDATE">
+    </form>
+
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <label for="">Patient to Remove</label>
+        <input type="number" name="delete_patient">
+        <input type="submit" value="DELETE">
+    </form>
 </body>
 </html>
 
@@ -46,14 +81,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$connection) {
         echo "ERROR: Database connection failed";
     } else {
-        $query = "INSERT INTO medical_records(patient_data,date) VALUES ($1, $2)";
+        $query = "INSERT INTO medical_records(patient_data, date) VALUES ($1, $2)";
 
         if (!empty($patient_name) && !empty($date) && !empty($objective) && !empty($assessment) && !empty($plan)) {
-            $patient_data = json_encode(['info' => $patient_name, 'objective' => $objective, 'subjective' => $subjective, 'plan' => $plan]);
+            $patient_data = json_encode(['info' => $patient_name, 'subjective' => $subjective, 'objective' => $objective, 'assessment' => $assessment, 'plan' => $plan]);
             $result = pg_query_params($connection, $query, array($patient_data, $date));
 
             if (!$result) {
-                echo "ERROR: Data insertion failed";
+                echo "ERROR: Data insertion failed: " . pg_last_error($connection);
             } else {
                 echo "Data inserted successfully";
             }
